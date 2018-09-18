@@ -5,7 +5,7 @@ import torch.nn.functional as F
 class QNetwork(nn.Module):
     """Actor (Policy) Model."""
 
-    def __init__(self, state_size, action_size, seed, fc1_units=64, fc2_units=64, fc3_units=64):
+    def __init__(self, state_size, action_size, num_units, seed):
         """Initialize parameters and build model.
         Params
         ======
@@ -17,17 +17,15 @@ class QNetwork(nn.Module):
         """
         super(QNetwork, self).__init__()
         self.seed = torch.manual_seed(seed)
-        self.fc1 = nn.Linear(state_size, fc1_units)
-        self.bn1 = nn.BatchNorm1d(fc1_units)
-        self.fc2 = nn.Linear(fc1_units, fc2_units)
-        self.bn2 = nn.BatchNorm1d(fc2_units)
-        self.fc3 = nn.Linear(fc2_units, fc3_units)
-        self.bn3 = nn.BatchNorm1d(fc3_units)
-        self.fc4 = nn.Linear(fc3_units, action_size)
+        for idx, units in enumerate(num_units):
+            if idx == 0:
+                modules = [nn.Linear(state_size, units)]
+            else:
+                modules.append(nn.Linear(num_units[idx-1], units))
+            modules.append(nn.ReLU())
+        modules.append(nn.Linear(num_units[-1], action_size))
+        self.model = nn.Sequential(*modules)
 
     def forward(self, state):
         """Build a network that maps state -> action values."""
-        x = self.bn1(F.relu(self.fc1(state)))
-        x = self.bn2(F.relu(self.fc2(x)))
-        x = self.bn3(F.relu(self.fc3(x)))
-        return self.fc4(x)
+        return self.model(state)
