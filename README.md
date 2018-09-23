@@ -20,7 +20,7 @@ The task is episodic and is considered solved when the agent has achieved a scor
 ## Dependencies
 
 ### Step 1: Setup Python Environment
-To set up your python environment to run the code in this repository, follow the instructions below.
+To set up your python environment to run the code in this repository, please follow the instructions below.
 
 1. Create (and activate) a new environment with Python 3.6.
 
